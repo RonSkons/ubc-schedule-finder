@@ -5,7 +5,7 @@ I am relatively new to JS and don't know any industry standards or best practice
 
 const baddays = [];
 var sessionString;
-var delivery; //!!! TODO Support for multiple modes, + hybrid
+const delivery = [];
 var starttime;
 var endtime;
 
@@ -32,9 +32,13 @@ function processInputs(){
     }
     
     if(document.getElementById("inperson").checked){
-       delivery = "In-Person";
-    }else{
-        delivery = "Online";
+       delivery.push("In-Person");
+    }
+    if(document.getElementById("online").checked){
+        delivery.push("Online");
+    }
+    if(document.getElementById("hybrid").checked){
+        delivery.push("Hybrid");
     }
     
     //Pull unavailable weekdays
@@ -95,13 +99,13 @@ function filterSections(sectionlist){
 }
 
 function meetsCriteria(section){
-    return  (section.delivery == delivery) &&
+    return  (delivery.includes(section.delivery)) &&
             (section.startTime >= starttime) && 
             (section.endTime <= endtime)&&
-            //(section.status != "Blocked") && 
-            //(section.status != "Full") &&
-            //(section.status != "Restricted") &&
-            //(section.status != "STT") &&
+            (section.status != "Blocked") && 
+            //(section.status != "Full") && //!!! disabled for debug purposes, TODO add user controls for full/restricted/stt courses
+            (section.status != "Restricted") &&
+            (section.status != "STT") &&
             (section.activity == "Lecture") && //Just lectures for now, !!! add proper lab/discussion support 
             (!baddays.some(day => section.days.includes(day))); //Make sure no bad days are selected
 }
@@ -109,7 +113,6 @@ function meetsCriteria(section){
 function display(foobar){ //!!! TODO implement
     console.log(foobar);
 }
-
 
 
 //Mutual recursion brute-force search
