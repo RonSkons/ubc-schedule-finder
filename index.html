@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>UBC Schedule Planner</title>
+        <script type="text/javascript" src="scripts.js"></script>
+        <script>
+        classcount = 2; //Two initial rows 
+        function addRow(){
+            table = document.getElementById("formTable").lastElementChild;
+            if(classcount < 9){
+                newrow = document.createElement("tr");
+                newrow.innerHTML = '<td><input type="text" id="dept'+classcount+'" required></td><td><input type="text" id="num'+classcount+'" required></td>';
+                table.appendChild(newrow);
+                classcount++;
+            }
+        }
+        function removeRow(){
+            table = document.getElementById("formTable").lastElementChild;
+            if(classcount > 2){
+                table.removeChild(table.lastElementChild);
+                classcount--;
+            }
+        }
+        </script>
+	</head>
+    <body>
+        <h1>UBC Schedule Planner</h1>
+        <br>
+        <form action="javascript:processInputs()" name="userParams" accept-charset="utf-8">
+            <div style="display: inline-block">
+                <table id="formTable">
+                    <tr>
+                        <th>Course Dept.</th>
+                        <th>Course #</th>
+                    </tr>
+                    <tr>
+                        <td><input type="text" id="dept0" placeholder="e.g. CPSC" required></td>
+                        <td><input type="text" id="num0" placeholder="e.g. 110" required></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" id="dept1" required></td>
+                        <td><input type="text" id="num1" required></td>
+                    </tr>
+                </table>
+                
+                <div style="text-align: right">
+                    <button type="button" onclick="addRow()">+</button>
+                    <button type="button" onclick="removeRow()">-</button>
+                </div>
+            </div>
+            
+            <br>
+            <br>
+            
+            <input id="winter2021" type="radio" name="semester" value="1">
+            <label for="winter2021">Winter 2021</label>
+            <input id="summer2022" type="radio" name="semester" value="2" checked>
+            <label for="summer2022">Summer 2022</label>
+            
+            <br>
+            <br>
+            
+            <p>Available Weekdays:</p>
+            
+            <input id="check0" type="checkbox" value="Mon" checked>
+            <label for="check0">Monday</label>
+            <input id="check1" type="checkbox" value="Tue" checked>
+            <label for="check1">Tuesday</label>
+            <input id="check2" type="checkbox" value="Wed" checked>
+            <label for="check2">Wednesday</label>
+            <input id="check3" type="checkbox" value="Thu" checked>
+            <label for="check3">Thursday</label>
+            <input id="check4" type="checkbox" value="Fri" checked>
+            <label for="check4">Friday</label>
+            
+            <br>
+            <br>
+            
+            <input id="inperson" type="radio" name="delivery" value="In-Person" checked>
+            <label for="inperson">In-Person</label>
+            <input id="online" type="radio" name="delivery" value="Online">
+            <label for="online">Online</label>
+            
+            <br>
+            <br>
+            
+            <label for="starttime">Earliest Available Start Time:</label>
+            <br>
+            <input id="starttime" type="number" maxlength="4" value="0000" min="0" max="2399" required>
+            <br>
+            <label for="starttime">Latest Available End Time:</label>
+            <br>
+            <input id="endtime" type="number" maxlength="4" value="2359" min="0" max="2359" required>
+            
+            <br>
+            <br>
+            
+            <input id="submit" type="submit" value="Make Schedule">
+        </form>
+        
+    </body>
+</html>
