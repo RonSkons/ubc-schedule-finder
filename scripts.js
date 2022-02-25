@@ -9,6 +9,9 @@ const delivery = [];
 var starttime;
 var endtime;
 
+//!!! TODO make customizable
+var semesterMax = 5;
+
 //Main function of the program. Run when main form is submitted.
 function processInputs(){
     
@@ -102,9 +105,9 @@ function meetsCriteria(section){
     return  (delivery.includes(section.delivery)) &&
             (section.startTime >= starttime) && 
             (section.endTime <= endtime)&&
-            (section.status != "Blocked") && 
-            //(section.status != "Full") && //!!! disabled for debug purposes, TODO add user controls for full/restricted/stt courses
-            (section.status != "Restricted") &&
+            //(section.status != "Blocked") && //!!! disabled for debug purposes, TODO add user controls for course status
+            //(section.status != "Full") && 
+            //(section.status != "Restricted") &&
             (section.status != "STT") &&
             (section.activity == "Lecture") && //Just lectures for now, !!! add proper lab/discussion support 
             (!baddays.some(day => section.days.includes(day))); //Make sure no bad days are selected
@@ -119,49 +122,56 @@ function display(foobar){ //!!! TODO implement
 //A schedule is a list of courses
 //Due to structure of course list, it is necessary to keep track of depth in the course list array
 
-//!!! TODO multiple solutions
 function solveSchedule(schedule, depth){
     if(schedule.length == classcount){ //schedule is full, return solved schedule
-        return schedule;
+        return [schedule];
     }else{
-       return solveListOfSchedule(nextSchedules(schedule, depth).filter(hasNoConflict), depth+1);
+       return solveListOfSchedule(nextSchedules(schedule, depth).filter(isValid), depth+1);
     }
 }
 
 function solveListOfSchedule(los, depth){
     //Split list of schedules into first and rest
-    first = los.shift();
-    rest = los;
-    if(first === undefined){ //Produces true when los was empty before shift()
-        return false; //Dead end, backtrack
+    var [first, ...rest] = los;
+    if(first === undefined){ //Produces true when los was empty
+        return []; //Dead end, backtrack
     }else{
-        trycatch = solveSchedule(first, depth);
-        
-        if(trycatch !== false){
-            return trycatch;
-        }else{
-            return solveListOfSchedule(rest, depth);
-        }
+        return solveSchedule(first, depth).concat(solveListOfSchedule(rest, depth));
     }
 }
 
+
 //Helper functions
+//=================
 function nextSchedules(schedule, depth){
     return filtered[depth].map(course => schedule.concat([course]));
 }
 
-function hasNoConflict(schedule){
-    return !schedule.some(course1 => schedule.some(course2 => hasCourseConflict(course1, course2)));
+function isValid(schedule){
+    //Check whether or not any courses conflict time-wise
+    var courseConflict = schedule.some(course1 => schedule.some(course2 => hasCourseConflict(course1, course2)));
+    
+    //Make sure there aren't too many courses in either semester
+    var term1Count = schedule.filter(course => (course.term == 1)).length;
+    var term2Count = schedule.length - term1Count;
+    var semesterOverflow = (term1Count > semesterMax) || (term2Count > semesterMax);
+    
+    return !courseConflict && !semesterOverflow;
 }
 
 function hasCourseConflict(course1, course2){
-    if(course1 == course2 || course1.semester != course2.semester){
+   if(course1.term != course2.term || hasNoIntersection(course1.days, course2.days) || course1 == course2){
         return false;
     }else if(course1.startTime >= course2.startTime && course1.startTime < course2.endTime){
         return true;  
-    }else if(course2.startTime >= course1.startTime && course2.startTime < course1.endTime){
+    }else if(course1.endTime <= course2.endTime && course1.endTime > course2.startTime){
         return true;
     }else{
-        return false
+        return false;
     }
+}
+
+//Produce true if two arrays have no items in common
+function hasNoIntersection(a1, a2){
+    return !a1.some(item => a2.includes(item));
 }

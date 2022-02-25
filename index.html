@@ -7,7 +7,7 @@
         classcount = 2; //Two initial rows 
         function addRow(){
             table = document.getElementById("formTable").lastElementChild;
-            if(classcount < 9){
+            if(classcount < 16){
                 newrow = document.createElement("tr");
                 newrow.innerHTML = '<td><input type="text" id="dept'+classcount+'" required></td><td><input type="text" id="num'+classcount+'" required></td>';
                 table.appendChild(newrow);
