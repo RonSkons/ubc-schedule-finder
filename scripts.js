@@ -4,13 +4,11 @@ I am relatively new to JS and don't know any industry standards or best practice
 */
 
 const baddays = [];
-var sessionString;
+var sessionstring;
 const delivery = [];
 var starttime;
 var endtime;
-
-//!!! TODO make customizable
-var semesterMax = 5;
+var semestermax; //Default upper bound
 
 //Main function of the program. Run when main form is submitted.
 function processInputs(){
@@ -29,9 +27,9 @@ function processInputs(){
     
     //!!! TODO: un-hardcode this. somehow.
     if(document.getElementById("winter2021").checked){
-       sessionString = "&sesscd=W&sessyr=2021";
+       sessionstring = "&sesscd=W&sessyr=2021";
     }else{
-        sessionString = "&sesscd=S&sessyr=2022";
+        sessionstring = "&sesscd=S&sessyr=2022";
     }
     
     if(document.getElementById("inperson").checked){
@@ -40,6 +38,7 @@ function processInputs(){
     if(document.getElementById("online").checked){
         delivery.push("Online");
     }
+    
     if(document.getElementById("hybrid").checked){
         delivery.push("Hybrid");
     }
@@ -59,11 +58,19 @@ function processInputs(){
     for(i=0; i < classcount; i++){
         getClassInfo(classdepts[i], classnums[i]);
     }
+    
+    var maxcourse = Number.parseInt(document.getElementById("maxcourse").value);
+    //Get max courses per semester, if specified
+    if(Number.isInteger(maxcourse)){
+        semestermax = maxcourse;
+    }else{
+        semestermax = classcount;
+    }
 }
 
 //Sends a request to scrapeCourse.php to get information about sections of a specific class.
 function getClassInfo(dept, num){
-    var url = "scrapeCourse.php?dept="+dept+"&course="+num+sessionString;
+    var url = "scrapeCourse.php?dept="+dept+"&course="+num+sessionstring;
     
     const xmlHttp = new XMLHttpRequest();
     xmlHttp.onload = function() { 
@@ -154,7 +161,7 @@ function isValid(schedule){
     //Make sure there aren't too many courses in either semester
     var term1Count = schedule.filter(course => (course.term == 1)).length;
     var term2Count = schedule.length - term1Count;
-    var semesterOverflow = (term1Count > semesterMax) || (term2Count > semesterMax);
+    var semesterOverflow = (term1Count > semestermax) || (term2Count > semestermax);
     
     return !courseConflict && !semesterOverflow;
 }
