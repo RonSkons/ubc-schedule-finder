@@ -26,8 +26,8 @@ function processInputs(){
     
     
     //!!! TODO: un-hardcode this. somehow.
-    if(document.getElementById("winter2021").checked){
-       sessionstring = "&sesscd=W&sessyr=2021";
+    if(document.getElementById("winter2022").checked){
+       sessionstring = "&sesscd=W&sessyr=2022";
     }else{
         sessionstring = "&sesscd=S&sessyr=2022";
     }
@@ -112,9 +112,9 @@ function meetsCriteria(section){
     return  (delivery.includes(section.delivery)) &&
             (section.startTime >= starttime) && 
             (section.endTime <= endtime)&&
-            //(section.status != "Blocked") && //!!! disabled for debug purposes, TODO add user controls for course status
-            //(section.status != "Full") && 
-            //(section.status != "Restricted") &&
+            (section.status != "Blocked") && //!!! disabled for debug purposes, TODO add user controls for course status
+            (section.status != "Full") && 
+            (section.status != "Restricted") &&
             (section.status != "STT") &&
             (section.activity == "Lecture") && //Just lectures for now, !!! add proper lab/discussion support 
             (!baddays.some(day => section.days.includes(day))); //Make sure no bad days are selected
